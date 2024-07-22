@@ -56,4 +56,67 @@ def test_generate_dates_by_year():
     year = 2021
     result = EnergyBillUtils.generate_dates_by_year(year)
     assert len(result) == settings.IDEAL_ENERGY_BILLS_FOR_RECOMMENDATION  # Assume um número fixo de datas geradas para o ano dado
+    
+#fake da classe energy_bill
+class mock_energy_bill:
+    off_peak_consumption_in_kwh = None
+    off_peak_measured_demand_in_kw = None
+    peak_consumption_in_kwh = None
+    peak_measured_demand_in_kw = None
 
+# Testa a função de validar a demanda de energia
+def test_check_valid_consumption_demand():   
+    energy_bill = mock_energy_bill()
+
+    energy_bill.off_peak_consumption_in_kwh = 1
+    energy_bill.off_peak_measured_demand_in_kw = 1
+    energy_bill.peak_consumption_in_kwh = 1
+    energy_bill.peak_measured_demand_in_kw = 1
+    
+    # Entrada válida
+    assert (EnergyBillUtils.check_valid_consumption_demand(energy_bill) == True)
+    
+    energy_bill.off_peak_consumption_in_kwh = None
+    
+    # Off-peak consumption não registrado
+    assert (EnergyBillUtils.check_valid_consumption_demand(energy_bill) == True)
+    
+    
+    energy_bill.off_peak_consumption_in_kwh = 0
+    
+    # Off-peak consumption zerado
+    assert (EnergyBillUtils.check_valid_consumption_demand(energy_bill) == False)
+
+
+    energy_bill.off_peak_consumption_in_kwh = 1
+    energy_bill.off_peak_measured_demand_in_kw = None
+    
+    # Off-peak measured demand não registrado
+    assert (EnergyBillUtils.check_valid_consumption_demand(energy_bill) == True)
+    
+    energy_bill.off_peak_measured_demand_in_kw = 0
+    
+    # Off-peak measured demand zerado
+    assert (EnergyBillUtils.check_valid_consumption_demand(energy_bill) == False)
+    
+    energy_bill.off_peak_measured_demand_in_kw = 1
+    energy_bill.peak_consumption_in_kwh = None
+    
+    # Peak consumption não registrado
+    assert(EnergyBillUtils.check_valid_consumption_demand(energy_bill) == True)
+    
+    energy_bill.peak_consumption_in_kwh = 0
+    
+    # Peak consumption zerado
+    assert(EnergyBillUtils.check_valid_consumption_demand(energy_bill) == False)
+    
+    energy_bill.peak_consumption_in_kwh = 1
+    energy_bill.peak_measured_demand_in_kw = None
+    
+    # Peak measured demand não registrado
+    assert(EnergyBillUtils.check_valid_consumption_demand(energy_bill) == True)
+    
+    energy_bill.peak_measured_demand_in_kw = 0
+    
+    # Peak measured demand zerado
+    assert(EnergyBillUtils.check_valid_consumption_demand(energy_bill) == False)
